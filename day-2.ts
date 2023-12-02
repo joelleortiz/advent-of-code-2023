@@ -117,22 +117,50 @@ const day2Result = parsedDay2Inputs.reduce((acc, curr) => {
   const [game, sets] = curr.split(": ");
   const setList = sets.split("; ");
 
-  const res = setList.every((set) => {
+  console.debug(setList); //[ '3 blue, 4 red', '1 red, 2 green, 6 blue', '2 green' ]
+  const cubeCountPerColour = setList.map((set) => {
     const colours = set.split(", ");
+    const cubeCountPerColour = colours.reduce(
+      //[ { blue: 3, red: 4 }, { red: 1, green: 2, blue: 6 }, { green: 2 } ]
+      (acc: Record<string, number>, colour) => {
+        const [cube, value] = colour.split(" ");
+        acc[value] = +cube;
+        return acc;
+      },
+      {}
+    );
 
-    const groups = Object.groupBy(colours, (colour) => {
-      const [cube, value] = colour.split(" ");
-
-      return +cube <= cubes[value];
-    });
+    return cubeCountPerColour;
   });
 
-  if (res) {
-    const [_text, id] = game.split(" ");
-    acc += +id;
-  }
+  console.debug(cubeCountPerColour);
 
-  return acc;
+  const maxCubesPerColour = cubeCountPerColour.reduce(
+    (acc: Record<string, number>, colourGroup: Record<string, number>) => {
+      Object.keys(colourGroup).map((cubeColour) => {
+        acc[cubeColour] =
+          colourGroup[cubeColour] && acc[cubeColour]
+            ? Math.max(acc[cubeColour], colourGroup[cubeColour])
+            : colourGroup[cubeColour];
+      });
+
+      return acc;
+    },
+    {}
+  );
+
+  const res = Object.values(maxCubesPerColour).reduce(
+    (acc, curr) => (acc *= curr),
+    1
+  );
+
+  //   console.debug("max", maxCubesPerColour);
+  //   if (res) {
+  //     const [_text, id] = game.split(" ");
+  //     acc += +id;
+  //   }
+
+  return (acc += res);
 }, 0);
 
 console.debug(day2Result);
