@@ -120,7 +120,7 @@ const day2Result = parsedDay2Inputs.reduce((acc, curr) => {
   const res = setList.every((set) => {
     const colours = set.split(", ");
 
-    return colours.every((colour) => {
+    const groups = Object.groupBy(colours, (colour) => {
       const [cube, value] = colour.split(" ");
 
       return +cube <= cubes[value];
