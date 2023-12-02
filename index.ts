@@ -1002,7 +1002,9 @@ xlkdlhlk23four
 const parsedInput = inputs.split("\n");
 
 const result = parsedInput.reduce((acc, curr) => {
-  const numbers = [...curr.matchAll(/\d/g)];
+  const numbers = [
+    ...curr.matchAll(/\d|one|two|three|four|five|six|seven|eight|nine/g),
+  ];
 
   const sum = numbers[0][0] + numbers[numbers.length - 1][0];
 
