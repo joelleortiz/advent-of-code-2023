@@ -1001,13 +1001,27 @@ xlkdlhlk23four
 
 const parsedInput = inputs.split("\n");
 
+const mapping: Record<string, string> = {
+  one: "1",
+  two: "2",
+  three: "3",
+  four: "4",
+  five: "5",
+  six: "6",
+  seven: "7",
+  eight: "8",
+  nine: "9",
+};
+
 const result = parsedInput.reduce((acc, curr) => {
   const numbers = [
-    ...curr.matchAll(/\d|one|two|three|four|five|six|seven|eight|nine/g),
+    ...curr.matchAll(/(?=(\d|one|two|three|four|five|six|seven|eight|nine))/g),
   ];
 
-  const sum = numbers[0][0] + numbers[numbers.length - 1][0];
+  const first = numbers[0][1];
+  const last = numbers[numbers.length - 1][1];
 
+  const sum = (mapping[first] ?? first) + (mapping[last] ?? last);
   return (acc += +sum);
 }, 0);
 
