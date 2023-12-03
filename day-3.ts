@@ -187,94 +187,44 @@ const partNumbers = numbers.reduce((sum, numberMatches, rowIdx) => {
   return (sum += rowMatchSum);
 }, 0);
 
-const partNumberList = numbers.reduce(
-  (
-    partNumbers: {
-      value: number;
-      idxRange: number[];
-    }[][],
-    numberMatches,
-    rowIdx
-  ) => {
-    const rowMatches = numberMatches.reduce(
-      (
-        rowPartNumbers: { value: number; idxRange: number[] }[],
-        numberMatch
-      ) => {
-        const strIdx = numberMatch.index ?? 0;
-        const valueToCheck = numberMatch[0];
-        const up = rowIdx - 1;
-        const down = rowIdx + 1;
-        const range = [
-          strIdx - 1,
-          ...Array.from(
-            { length: valueToCheck.length + 1 },
-            (_, i) => i + strIdx
-          ),
-        ];
-
-        const isPartNumber = [up, down, rowIdx].some((rowToCheck) => {
-          return range.some((idxToCheck) => {
-            try {
-              return !matrix[rowToCheck][idxToCheck].match(/\d|\./);
-            } catch (ex) {
-              return false;
-            }
-          });
-        });
-
-        if (isPartNumber)
-          rowPartNumbers.push({ value: +valueToCheck, idxRange: range });
-        return rowPartNumbers;
-      },
-      []
-    );
-
-    partNumbers.push(rowMatches);
-    return partNumbers;
-  },
-  []
-);
-
 const possibleGears = parsedDay3Inputs.map((i) => [...i.matchAll(/\*/g)]);
 
-const merged = partNumberList.map((l, idx) => [
-  ...l,
-  ...(possibleGears[idx] ?? []),
-]);
-
 // console.debug(merged);
+// console.debug(numbers.length, possibleGears.length);
 
 const gears = possibleGears.reduce((gearList: number, gearMatches, rowIdx) => {
   const rowMatches = gearMatches.reduce((gearRatio: number, gearMatch, idx) => {
+    console.debug(gearMatch);
     const gearMatchIdx = gearMatch.index;
     const up = rowIdx - 1;
     const down = rowIdx + 1;
-    const range = [idx - 1, idx, idx + 1];
+    // const range = [idx - 1, idx, idx + 1];
 
-    const adjacentNums = [up, down, rowIdx].reduce((nums: number[], row) => {
-      const rowNums = range.reduce((acc: number[], currRangeIdx) => {
-        try {
-          const value = merged[row][currRangeIdx];
+    const adjacentNums = [up, rowIdx, down].reduce((nums: number[], row) => {
+      const rowNums = numbers[row].reduce((acc: number[], number) => {
+        const value = number;
+        console.log(value);
 
-          if ("value" in value && gearMatchIdx) {
-            if (
-              typeof value.value === "number" &&
-              value.idxRange.includes(gearMatchIdx)
-            ) {
-              acc.push(value.value);
-            }
-          }
-        } catch (ex) {
-          // do nothing
+        if (value && value.index !== undefined && gearMatchIdx !== undefined) {
+          const strIdx = value.index;
+          const strRange = [
+            strIdx - 1,
+            ...Array.from(
+              { length: value[0].length + 1 },
+              (_, i) => i + strIdx
+            ),
+          ];
+
+          if (strRange.includes(gearMatchIdx)) acc.push(+value[0]);
         }
+
         return acc;
       }, []);
       nums.push(...rowNums);
       return nums;
     }, []);
 
-    // console.debug(adjacentNums);
+    console.debug(adjacentNums);
     const isGear = adjacentNums.length === 2;
 
     if (isGear) {
