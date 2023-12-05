@@ -362,28 +362,30 @@ const findMappedValueV2 = (
   return 0;
 };
 
+const largest = seedRanges.reduce(
+  (acc, [_, range]) => Math.max(+range, acc),
+  0
+);
+console.log(largest / 1024 / 1024);
+
 const lowestV2 = seedRanges.reduce((lowestLocation: number, curr) => {
-  const [start, range] = curr;
-  //   const max = +start + +range - 1;
+  const [s, r] = curr;
+  const start = +s;
+  const range = +r;
+  let acc = -1;
+  for (let i = start; i < start + range; i++) {
+    const soil = findMappedValue(i, seedToSoilMap);
+    const fertilizer = findMappedValue(soil, soilToFertilizerMap);
+    const water = findMappedValue(fertilizer, fertilizerToWaterMap);
+    const light = findMappedValue(water, waterToLightMap);
+    const temperature = findMappedValue(light, lightToTemperatureMap);
+    const humidity = findMappedValue(temperature, tempToHumidityMap);
+    const location = findMappedValue(humidity, humidityToLocationMap);
 
-  const location = Array.from({ length: +range }, (_, i) => i + +start).reduce(
-    (lowestLocation2, seed) => {
-      const soil = findMappedValue(+seed, seedToSoilMap);
-      const fertilizer = findMappedValue(soil, soilToFertilizerMap);
-      const water = findMappedValue(fertilizer, fertilizerToWaterMap);
-      const light = findMappedValue(water, waterToLightMap);
-      const temperature = findMappedValue(light, lightToTemperatureMap);
-      const humidity = findMappedValue(temperature, tempToHumidityMap);
-      const location = findMappedValue(humidity, humidityToLocationMap);
+    acc = acc !== -1 ? Math.min(acc, location) : location;
+  }
 
-      return lowestLocation2 !== -1
-        ? Math.min(lowestLocation2, location)
-        : location;
-    },
-    -1
-  );
-
-  return lowestLocation !== -1 ? Math.min(lowestLocation, location) : location;
+  return lowestLocation !== -1 ? Math.min(lowestLocation, acc) : acc;
 }, -1);
 
 console.debug(lowestV2);
