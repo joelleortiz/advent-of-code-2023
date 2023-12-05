@@ -2,7 +2,7 @@
   "name": "advent-of-code-2023",
   "version": "0.0.0",
   "scripts": {
-    "dev": "ts-node day-4.ts"
+    "dev": "NODE_OPTIONS=--max-old-space-size=4096 ts-node day-5.ts"
   },
   "repository": {
     "type": "git",
