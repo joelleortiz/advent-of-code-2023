@@ -1005,6 +1005,8 @@ KK677 28
 KTJJT 220
 QQQJA 483`;
 
+const test7Debug = `J8K33 1`;
+
 const parsedDay7Inputs = day7Inputs.split("\n").map((str) => {
   const [hand, bid] = str.split(" ");
   return { hand, bid };
@@ -1014,7 +1016,6 @@ const labels = [
   "A",
   "K",
   "Q",
-  "J",
   "T",
   "9",
   "8",
@@ -1024,15 +1025,23 @@ const labels = [
   "4",
   "3",
   "2",
+  "J",
 ];
 
 const matchType = (count: number, hand: string) => {
   let hasMatch = false;
   let matchingCharacter = "";
 
-  for (let idx = 0; idx <= 5 - count; idx++) {
-    const isMatch =
-      (hand.match(new RegExp(hand[idx], "g")) || []).length === count;
+  const jackLength = (hand.match(/J/g) || []).length;
+
+  for (let idx = 0; idx < 4; idx++) {
+    let jackBuffer = jackLength;
+
+    if (hand[idx] === "J") jackBuffer = 0;
+
+    const matchLength = (hand.match(new RegExp(hand[idx], "g")) || []).length;
+
+    const isMatch = matchLength === count || matchLength + jackBuffer === count;
 
     if (isMatch) {
       hasMatch = true;
@@ -1049,10 +1058,9 @@ const getHandType = (hand: string) => {
 
   const threeMatch = matchType(3, hand);
   if (threeMatch.hasMatch) {
-    const remaining = hand.replace(
-      new RegExp(threeMatch.matchingCharacter, "g"),
-      ""
-    );
+    const remaining = hand
+      .replace(new RegExp(threeMatch.matchingCharacter, "g"), "")
+      .replace(new RegExp(/J/, "g"), "");
 
     if (matchType(2, remaining).hasMatch) return 4; // full house
 
@@ -1061,10 +1069,9 @@ const getHandType = (hand: string) => {
 
   const twoMatch = matchType(2, hand);
   if (twoMatch.hasMatch) {
-    const remaining = hand.replace(
-      new RegExp(twoMatch.matchingCharacter, "g"),
-      ""
-    );
+    const remaining = hand
+      .replace(new RegExp(twoMatch.matchingCharacter, "g"), "")
+      .replace(new RegExp(/J/, "g"), "");
 
     if (matchType(2, remaining).hasMatch) return 2; // two pair
 
@@ -1150,7 +1157,7 @@ const sortedResults = inputsWithType.sort((a, b) => {
   }
 });
 
-console.debug(sortedResults);
+console.debug(JSON.stringify(sortedResults));
 
 const totalWinnings = sortedResults.reduce((total, result, idx) => {
   const win = +result.bid * (idx + 1);
@@ -1162,3 +1169,10 @@ console.debug(totalWinnings);
 // test correct 6440
 // 253928036 too high
 // 253866470
+
+// part 2
+// 255664725 too high
+// 256800753 too high
+// 255611267
+// 255054981
+// 254494947
