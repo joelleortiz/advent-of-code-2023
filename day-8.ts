@@ -811,6 +811,17 @@ AAA = (BBB, BBB)
 BBB = (AAA, ZZZ)
 ZZZ = (ZZZ, ZZZ)`;
 
+const test8DebugPart2 = `LR
+
+11A = (11B, XXX)
+11B = (XXX, 11Z)
+11Z = (11B, XXX)
+22A = (22B, XXX)
+22B = (22C, 22C)
+22C = (22Z, 22Z)
+22Z = (22B, 22B)
+XXX = (XXX, XXX)`;
+
 const parsedInputs = day8Inputs.split("\n");
 
 const [instructions, _blank, ...directionalMapsRaw] = parsedInputs;
@@ -828,28 +839,42 @@ const directionalMaps = directionalMapsRaw.reduce(
   {}
 );
 
-let instructionList = instructions;
+const gcd = (a: number, b: number): number => (a ? gcd(b % a, a) : b);
 
-let node = "AAA";
-let counter = 0;
+const lcm = (a: number, b: number): number => (a * b) / gcd(a, b);
 
-do {
-  const nodeMap = directionalMaps[node];
+let nodes = Object.keys(directionalMaps).filter((x) => x.endsWith("A"));
 
-  if (!instructionList) {
-    instructionList = instructions;
-  }
+const stepTotals = nodes.reduce((stepsList: number[], node) => {
+  //   let node = "AAA";
+  let counter = 0;
+  let instructionList = instructions;
 
-  let currentInstruction = instructionList.slice(0, 1);
-  instructionList = instructionList.slice(1);
+  do {
+    const nodeMap = directionalMaps[node];
 
-  if (currentInstruction === "L") {
-    node = nodeMap[0];
-  } else {
-    node = nodeMap[1];
-  }
+    if (!instructionList) {
+      instructionList = instructions;
+    }
 
-  counter++;
-} while (node !== "ZZZ");
+    let currentInstruction = instructionList.slice(0, 1);
+    instructionList = instructionList.slice(1);
 
-console.debug(counter);
+    if (currentInstruction === "L") {
+      node = nodeMap[0];
+    } else {
+      node = nodeMap[1];
+    }
+
+    counter++;
+  } while (!node.endsWith("Z"));
+
+  stepsList.push(counter);
+  return stepsList;
+}, []);
+
+console.debug(stepTotals);
+
+const steps = stepTotals.reduce(lcm);
+
+console.debug(steps);
