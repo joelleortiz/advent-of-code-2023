@@ -203,7 +203,9 @@ const testDay9Input = `0 3 6 9 12 15
 1 3 6 10 15 21
 10 13 16 21 30 45`;
 
-const parsedDay9Inputs = day9Inputs.split("\n");
+const debug9 = `0 3 6 9 12 15`;
+
+const parsedDay9Inputs = debug9.split("\n");
 
 const inputsToProcess = parsedDay9Inputs.map((input) =>
   input.split(" ").map((i) => +i)
@@ -230,6 +232,13 @@ const diffTree = inputsToProcess.map((values) => {
 
   return diffList;
 });
+
+const extrapolateFromBottom = diffTree.map((tree) => {
+  console.debug(tree);
+  return tree;
+});
+
+console.debug(extrapolateFromBottom);
 
 const totals = diffTree.reduce((total: number, tree, idx) => {
   const diff = tree.reduce((totalToAdd: number, currTreeItem) => {
