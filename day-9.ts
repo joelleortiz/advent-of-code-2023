@@ -238,10 +238,10 @@ const totals = diffTree.reduce((total: number, tree, idx) => {
     return totalToAdd;
   }, 0);
 
-  const toAdd = inputsToProcess[idx][0];
+  const toAdd = inputsToProcess[idx][inputsToProcess[idx].length - 1];
 
   //   console.debug(diff, toAdd);
-  const toAddToTotal = toAdd - diff;
+  const toAddToTotal = diff + toAdd;
 
   return (total += toAddToTotal);
 }, 0);
