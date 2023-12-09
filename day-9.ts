@@ -203,9 +203,9 @@ const testDay9Input = `0 3 6 9 12 15
 1 3 6 10 15 21
 10 13 16 21 30 45`;
 
-const debug9 = `0 3 6 9 12 15`;
+const debug9 = `1 3 6 10 15 21`;
 
-const parsedDay9Inputs = debug9.split("\n");
+const parsedDay9Inputs = day9Inputs.split("\n");
 
 const inputsToProcess = parsedDay9Inputs.map((input) =>
   input.split(" ").map((i) => +i)
@@ -233,25 +233,26 @@ const diffTree = inputsToProcess.map((values) => {
   return diffList;
 });
 
-const extrapolateFromBottom = diffTree.map((tree) => {
-  console.debug(tree);
-  return tree;
+// console.debug(diffTree);
+
+const extrapolatedTree = diffTree.map((tree) => {
+  const originalTree = tree.reverse();
+  return originalTree.map((t, idx) => {
+    console.debug("idz", idx);
+    if (idx === 0) t.unshift(0);
+
+    if (idx + 1 < originalTree.length) {
+      originalTree[idx + 1].unshift(originalTree[idx + 1][0] - t[0]);
+    }
+
+    return t;
+  });
 });
 
-console.debug(extrapolateFromBottom);
-
-const totals = diffTree.reduce((total: number, tree, idx) => {
-  const diff = tree.reduce((totalToAdd: number, currTreeItem) => {
-    const last = currTreeItem[currTreeItem.length - 1];
-    totalToAdd += last;
-    return totalToAdd;
-  }, 0);
-
-  const toAdd = inputsToProcess[idx][inputsToProcess[idx].length - 1];
-
-  //   console.debug(diff, toAdd);
-  const toAddToTotal = diff + toAdd;
-
+console.debug(extrapolatedTree);
+const totals = extrapolatedTree.reduce((total: number, tree, idx) => {
+  const toAddToTotal = inputsToProcess[idx][0] - tree[tree.length - 1][0];
+  console.debug(toAddToTotal);
   return (total += toAddToTotal);
 }, 0);
 
